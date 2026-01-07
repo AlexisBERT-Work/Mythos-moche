@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/lore_mongodb"
+}
+
+datasource db {
+  provider = "mongodb"
+}
+
+enum Status {
+  PENDING
+  VALIDATED
+  REJECTED
+}
+
+model Creature {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  authorId    String
+  name        String      @unique
+  origin      String?
+  createdAt   DateTime    @default(now())
+  testimonies Testimony[]
+}
+
+model Testimony {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  description String
+  status      Status    @default(PENDING)
+
+  authorId    String
+  validatedBy String?
+  validatedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  creatureId  String    @db.ObjectId
+  creature    Creature  @relation(fields: [creatureId], references: [id])
+}

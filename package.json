@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx src/server.ts"
+    "dev": "tsx src/server.ts",
+    "gen:auth": "npx prisma generate --schema=./prisma/schema_postgre.prisma",
+    "gen:lore": "npx prisma generate --schema=./prisma/schema_mongodb.prisma",
+    "gen:all": "npm run gen:auth && npm run gen:lore",
+    "migrate:auth": "npx prisma migrate dev --schema=./prisma/schema_postgre.prisma",
+    "push:lore": "npx prisma db push --schema=./prisma/schema_mongodb.prisma"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +22,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.1.2",
     "pg": "^8.16.3"
   },
   "devDependencies": {
