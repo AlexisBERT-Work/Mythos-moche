@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
-import bestiaire from "./services/Bestiaire";
+import bestiaire from "./services/Creature";
+import Temoignage from "./services/Temoignage";
 import { connectDatabase } from "./data/connectDatabase";
 
 dotenv.config({
@@ -13,6 +14,7 @@ const app = express();
 
 app.use(express.json());
 app.use("/", bestiaire);
+app.use("/", Temoignage);
 
 (async () => {
     try {

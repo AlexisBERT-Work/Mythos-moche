@@ -29,7 +29,7 @@ model Creature {
 
 model Temoignage {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  creatureId    String
+  creatureName  String
   description   String
   status        Status   @default(PENDING)
   validatedBy   String?
