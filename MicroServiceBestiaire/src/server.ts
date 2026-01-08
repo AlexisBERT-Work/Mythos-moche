@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-import auth from "./services/Bestiaire";
+import auth from "./services/Auth";
 import { connectDatabase } from "./data/connectDatabase";
 
 dotenv.config({
