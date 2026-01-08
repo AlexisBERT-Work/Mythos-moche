@@ -10,13 +10,29 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
 }
 
+enum Status {
+  PENDING
+  VALIDATED
+  REJECTED
+}
 
-model User {
-  id       String   @id @default(uuid()) @db.Uuid
-  email    String   @unique
-  password String
-  role     String
+model Creature {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String
+  name        String  @unique
+  origin      String
+  createdAt   DateTime @default(now())
+}
+
+model Temoignage {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  creatureId    String
+  description   String
+  status        Status   @default(PENDING)
+  validatedBy   String?
+  validationAt  DateTime?
+  createdAt     DateTime @default(now())
 }
