@@ -29,6 +29,7 @@ model Creature {
 
 model Temoignage {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userName      String
   creatureName  String
   description   String
   status        Status   @default(PENDING)

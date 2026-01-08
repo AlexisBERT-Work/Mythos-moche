@@ -45,6 +45,6 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
         authReq.user = { id: user.id, email: user.email, role: user.role };
         next();
     } catch (err) {
-        res.status(401).json({ message: "Invalid or expired token" });
+    res.status(401).json({ message: `Invalid or expired token ${err}` });
     }
 };

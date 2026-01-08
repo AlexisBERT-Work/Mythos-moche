@@ -72,7 +72,7 @@ router.post("/auth/login", async (req: Request, res: Response) => {
 /**
  * ME
  */
-router.get("/auth/me", (req: Request, res: Response) => {
+router.get("/auth/me", authMiddleware, (req: Request, res: Response) => {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
