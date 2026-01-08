@@ -3,7 +3,7 @@ import { hashPassword, comparePassword } from "../utils/hashPassword";
 import { generateToken } from "../utils/jwt";
 import pool from "../data/connectDatabase";
 import crypto from "node:crypto";
-import { authMiddleware } from "../middleware/middleware";
+import { authMiddleware, AuthRequest } from "../middleware/middleware";
 
 const router = express.Router();
 
@@ -70,7 +70,7 @@ router.post("/auth/login", async (req: Request, res: Response) => {
 });
 
 /**
- * ME (Protected)
+ * ME
  */
 router.get("/auth/me", (req: Request, res: Response) => {
     try {
@@ -89,14 +89,41 @@ router.get("/auth/me", (req: Request, res: Response) => {
 });
 
 /** 
- * Get users with role admin
+ * Get users with role admin (Protected)
  */
 router.get("/admin/users", authMiddleware, async (req: Request, res: Response) => {
     try {
-        const result =  await pool.query('SELECT id, email, username, role FROM "User" WHERE role = $1', ['ADMIN']);
+        const result = await pool.query(
+            'SELECT id, email, username, role FROM "User" WHERE role = $1', 
+            ['ADMIN']
+        );
+        
         res.json({ users: result.rows });
     } catch (err) {
         res.status(500).json({ message: "Failed to fetch users" });
+    }
+});
+
+/**
+ * Modify user role (Protected)
+ */
+router.patch("/users/:id/role", authMiddleware, async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = req.params.id;
+        const { role } = req.body;
+        if (!role) {
+            return res.status(400).json({ message: "Missing role field" });
+        }
+        const result = await pool.query
+            ('UPDATE "User" SET role = $1 WHERE id = $2 RETURNING id, email, username, role', 
+            [role, userId]
+        );
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json({ message: "User role updated", user: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ message: "Failed to update user role" });
     }
 });
 
