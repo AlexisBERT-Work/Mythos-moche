@@ -32,7 +32,7 @@ export const authMiddleware = async (
 
         const user = result.rows[0];
 
-        if (user.role !== "admin") {
+        if (user.role !== "ADMIN") {
             return res.status(403).json({ message: "Admin role required" });
         }
 

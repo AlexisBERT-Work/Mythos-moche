@@ -3,6 +3,7 @@ import { hashPassword, comparePassword } from "../utils/hashPassword";
 import { generateToken } from "../utils/jwt";
 import pool from "../data/connectDatabase";
 import crypto from "node:crypto";
+import { authMiddleware } from "../middleware/middleware";
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ const router = express.Router();
  */
 router.post("/auth/register", async (req: Request, res: Response) => {
     try {
-        const { email, password, role } = req.body;
+        const { email, password, username, role } = req.body;
 
         if (!email || !password) {
             return res.status(400).json({ message: "Missing fields" });
@@ -26,13 +27,14 @@ router.post("/auth/register", async (req: Request, res: Response) => {
         const id = crypto.randomUUID();
 
         const inserted = await pool.query(
-            'INSERT INTO "User" (id, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id',
-            [id, email, hashedPassword, role || "User"]
+            'INSERT INTO "User" (id, email, password, username, role) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+            [id, email, hashedPassword, username, role]
         );
 
         res.status(201).json({ message: "User registered successfully", userId: inserted.rows[0].id });
     } catch (err) {
         res.status(500).json({ message: "Register failed" });
+        console.error("REGISTER ERROR:", err);
     }
 });
 
@@ -78,12 +80,23 @@ router.get("/auth/me", (req: Request, res: Response) => {
         }
 
         const token = authHeader.split(" ")[1];
-        // verify token and return payload
         const decoded: any = require("jsonwebtoken").verify(token, process.env.JWT_SECRET);
 
         res.json({ user: decoded });
     } catch (err) {
         res.status(401).json({ message: "Invalid token" });
+    }
+});
+
+/** 
+ * Get users with role admin
+ */
+router.get("/admin/users", authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const result =  await pool.query('SELECT id, email, username, role FROM "User" WHERE role = $1', ['ADMIN']);
+        res.json({ users: result.rows });
+    } catch (err) {
+        res.status(500).json({ message: "Failed to fetch users" });
     }
 });
 
