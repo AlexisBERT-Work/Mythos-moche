@@ -36,4 +36,4 @@ export const getDb = (): Db => {
   return db;
 };
 
-export default client;
+export const mongoClient = client;

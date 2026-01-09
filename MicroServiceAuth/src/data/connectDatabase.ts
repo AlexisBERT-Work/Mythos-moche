@@ -1,11 +1,7 @@
 import { Pool } from "pg";
 import dotenv from "dotenv";
 
-dotenv.config(
-    { 
-        quiet: true 
-    }
-);
+dotenv.config({ quiet: true });
 
 const pool = new Pool({
   host: process.env.POSTGRESQL_HOST,
@@ -15,15 +11,11 @@ const pool = new Pool({
   database: process.env.POSTGRESQL_NAME,
 });
 
-/**
- * Connects to PostgreSQL and verifies the connection
- */
 export const connectDatabase = async (): Promise<void> => {
   try {
     const client = await pool.connect();
     await client.query("SELECT 1");
     client.release();
-
     console.log("✅ PostgreSQL connected successfully");
   } catch (error) {
     console.error("❌ PostgreSQL connection failed", error);
@@ -31,4 +23,4 @@ export const connectDatabase = async (): Promise<void> => {
   }
 };
 
-export default pool;
+export const pgPool = pool;

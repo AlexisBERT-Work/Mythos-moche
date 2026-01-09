@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import crypto from "node:crypto";
 import { getDb } from "../data/connectDatabase";
-import { authMiddleware } from "../middleware/middleware";
+import { verifyToken } from "../../../middleware";
 
 
 interface Temoignage {
@@ -69,7 +69,7 @@ router.post("/temoignage/register", async (req: Request, res: Response) => {
 /**
  * Recup temoignage entier
  */
-router.get("/temoignages", authMiddleware, async (req: Request, res: Response) => {
+router.get("/temoignages", verifyToken, async (req: Request, res: Response) => {
     try {
         const db = getDb();
         const collection = db.collection<Temoignage>("Temoignage");
